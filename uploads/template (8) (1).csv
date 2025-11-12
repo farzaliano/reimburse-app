@@ -1,0 +1,8 @@
+ID;Nama Pengaju;Tanggal Pengajuan;Jenis Reimburse;Jumlah (Rp);Status;Keterangan
+1;Fajar Adi;2025-06-01;Transportasi;50000;Disetujui;Reimburse gojek ke kantor
+2;Rina Oktavia;2025-06-03;Makan;75000;Menunggu;Sarapan rapat proyek
+3;Doni Prasetyo;2025-06-05;Akomodasi;300000;Ditolak;Menginap di luar kota (tanpa bukti)
+4;Siti Nurhaliza;2025-06-08;Transportasi;100000;Disetujui;Taksi ke klien
+5;Budi Santoso;2025-06-10;Kesehatan;150000;Menunggu;Obat flu
+6;Andi Saputra;2025-06-12;Makan;90000;Disetujui;Makan siang overtime
+7;Lisa Permata;2025-06-13;Lainnya;20000;Ditolak;Tidak sesuai kebijakan
