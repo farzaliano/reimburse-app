@@ -9,7 +9,7 @@ $conn = mysqli_connect($host, $user, $pass, $db);
 if (!$conn) {
     die("Koneksi ke database gagal: " . mysqli_connect_error());
 }
-?>
+
 
 
 function tambah($data)
@@ -96,3 +96,4 @@ function cari($keyword, $username = null, ...$statuses)
 
     return query($sql);
 }
+?>
