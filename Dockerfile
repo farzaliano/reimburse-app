@@ -1,9 +1,9 @@
 FROM php:8.1-apache
 
-# Ganti port Apache ke 8080 biar bisa jalan non-root
+# Ganti port Apache ke 8080
 RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf /etc/apache2/sites-available/000-default.conf
 
-# Install dependencies dan ekstensi
+# Install ekstensi yang dibutuhkan
 RUN apt-get update && apt-get install -y \
     zip unzip libzip-dev \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
@@ -15,22 +15,15 @@ RUN apt-get update && apt-get install -y \
 # Aktifkan mod_rewrite Apache
 RUN a2enmod rewrite
 
-# Copy file proyek ke container
+# Copy semua file proyek
 COPY . /var/www/html/
 
-# Permission agar Apache bisa akses file
-RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+# Set permission untuk OpenShift random UID
+RUN mkdir -p /var/www/html/upload \
+    && chgrp -R 0 /var/www/html \
+    && chmod -R g+rwX /var/www/html
 
-# Set working directory
 WORKDIR /var/www/html
 
-# ✅ Buat folder upload (bukan uploads)
-RUN mkdir -p /var/www/html/upload \
-    && chmod -R 777 /var/www/html/upload \
-    && chown -R www-data:www-data /var/www/html/upload
-
-# Expose port baru
 EXPOSE 8080
-
-# Jalankan Apache di foreground
 CMD ["apache2-foreground"]
