@@ -1,7 +1,9 @@
 FROM php:8.1-apache
 
+# Ganti port Apache ke 8080 biar bisa jalan non-root
 RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf /etc/apache2/sites-available/000-default.conf
 
+# Install dependencies dan ekstensi
 RUN apt-get update && apt-get install -y \
     zip unzip libzip-dev \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
@@ -10,18 +12,25 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure ldap \
     && docker-php-ext-install mysqli zip gd ldap
 
+# Aktifkan mod_rewrite Apache
 RUN a2enmod rewrite
 
-# Copy project
+# Copy file proyek ke container
 COPY . /var/www/html/
 
-# Pastikan folder uploads ada
-RUN mkdir -p /var/www/html/uploads
+# Permission agar Apache bisa akses file
+RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
 
-# Set permission folder agar Apache bisa nulis
-RUN chown -R www-data:www-data /var/www/html/uploads \
-    && chmod -R 775 /var/www/html/uploads
-
+# Set working directory
 WORKDIR /var/www/html
+
+# ✅ Buat folder upload (bukan uploads)
+RUN mkdir -p /var/www/html/upload \
+    && chmod -R 777 /var/www/html/upload \
+    && chown -R www-data:www-data /var/www/html/upload
+
+# Expose port baru
 EXPOSE 8080
+
+# Jalankan Apache di foreground
 CMD ["apache2-foreground"]
