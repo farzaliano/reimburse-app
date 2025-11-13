@@ -1,0 +1,117 @@
+version: "3.9"
+
+services:
+  reimbursev2-backend:
+    build:
+      context: ./reimburse_v2/reimburse-backend
+      dockerfile: dockerfile
+    container_name: reimbursev2-backend
+    working_dir: /var/www/html
+    volumes:
+      - ./reimburse_v2/reimburse-backend:/var/www/html
+    ports:
+      - "8000:8000"
+    depends_on:
+      - reimbursev2-db
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    networks:
+      - appnet
+
+  reimbursev2-frontend:
+    image: node:18
+    container_name: reimbursev2-frontend
+    working_dir: /app
+    volumes:
+      - ./reimburse_v2/reimburse-frontend:/app
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    networks:
+      - appnet
+
+  reimbursev2-db:
+    image: postgres:15
+    container_name: reimbursev2-db
+    restart: always
+    environment:
+      POSTGRES_DB: reimburse_dbv2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: revaldi08
+    volumes:
+      - reimbursev2-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - appnet
+
+  reimburse-php:
+    build:
+      context: ./reimburse
+      dockerfile: Dockerfile
+    container_name: reimburse-php
+    ports:
+      - "8080:80"
+    volumes:
+      - ./reimburse:/var/www/html
+    depends_on:
+      - reimburse-mysql
+    networks:
+      - appnet
+
+  reimburse-mysql:
+    image: mysql:5.7
+    container_name: reimburse-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: claimease2024
+      MYSQL_DATABASE: db_reimburse
+    ports:
+      - "3306:3306"
+    volumes:
+      - reimburse-mysql-data:/var/lib/mysql
+    networks:
+      - appnet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: reimburse-mysql
+      PMA_PORT: 3306
+    networks:
+      - appnet
+  nginx:
+    image: nginx:alpine
+    container_name: reimburse-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./reimburse-backend/public/storage:/var/www/html/public/storage
+    depends_on:
+      - reimbursev2-frontend
+      - reimbursev2-backend
+    networks:
+      - appnet
+  redis:
+    image: redis:6
+    container_name: reimbursev2-redis
+    networks:
+      - appnet
+    
+
+volumes:
+  reimbursev2-data:
+  reimburse-mysql-data:
+  
+networks:
+  appnet:
+    driver: bridge
+
+

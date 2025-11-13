@@ -1,15 +1,16 @@
 <?php
-// koneksi.php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "db_reimburse";
+$host = "172.15.10.80";   // alamat server MySQL
+$user = "app00-db01";      // user database
+$pass = "Cyberark2";       // password
+$db   = "reimburse_app";   // nama database
 
 $conn = mysqli_connect($host, $user, $pass, $db);
 
 if (!$conn) {
     die("Koneksi ke database gagal: " . mysqli_connect_error());
 }
+?>
+
 
 function tambah($data)
 {
